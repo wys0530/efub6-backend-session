@@ -2,7 +2,8 @@ package com.practice.efubaccount.account.service;
 
 import com.practice.efubaccount.account.domain.Account;
 import com.practice.efubaccount.account.dto.response.TokenResponseDto;
-import com.practice.efubaccount.account.repository.AccountRepository;
+import com.practice.efubaccount.global.exception.CustomException;
+import com.practice.efubaccount.global.exception.ErrorCode;
 import com.practice.efubaccount.global.jwt.TokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -13,7 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 @RequiredArgsConstructor
 public class AuthService {
-    private final AccountRepository accountRepository;
+    private final AccountService accountService;
     private final TokenProvider tokenProvider;
     private final RedisTemplate<String, String> redisTemplate;
 
@@ -24,14 +25,14 @@ public class AuthService {
     public TokenResponseDto reissueAccessToken(String refreshToken){
         // 전달받은 리프레시 토큰에서 이메일을 추출하여 사용자 정보 가져오기
         String email = tokenProvider.extractEmail(refreshToken);
-        Account account = getUserByEmail(email);
+        Account account = accountService.findByEmail(email);
 
         // Redis에서 해당 사용자 Id를 키로 하는 리프래시 토큰 가져오기
         String storedRefreshToken = redisTemplate.opsForValue().get(account.getAccountId().toString());
 
         // 전달받은 리프레시 토큰과 Redis에 저장된 리프레시 토큰이 일치하는지 확인
         if (storedRefreshToken == null || !storedRefreshToken.equals(refreshToken)){
-            throw new IllegalArgumentException("유효하지 않은 리프레시 토큰입니다.");
+            throw new CustomException(ErrorCode.INVALID_REFRESH_TOKEN);
         }
 
         // 일치한다면 새로운 AccessToken 생성
@@ -41,11 +42,4 @@ public class AuthService {
                 .accessToken(accessToken)
                 .build();
     }
-
-    //Email로 사용자 객체 가져오기
-    @Transactional(readOnly = true)
-    public Account getUserByEmail(String email){
-        return accountRepository.findByEmail(email).orElseThrow(() -> new IllegalArgumentException("해당 이메일로 사용자를 찾을 수 없습니다."));
-    }
-
 }
