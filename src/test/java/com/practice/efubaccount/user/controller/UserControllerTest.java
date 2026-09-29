@@ -35,7 +35,7 @@ class UserControllerTest {
     @MockitoBean
     private UserService userService;
 
-    // TODO 14. 회원 생성 API 테스트를 작성해주세요.
+    // 회원 생성 API 테스트를 작성해주세요.
     // Given
     // - name, email 준비
     // - UserRequestDTO 생성
@@ -48,4 +48,33 @@ class UserControllerTest {
     // - HTTP 201 Created 검증
     // - JSON 응답의 name, email 값 검증
     // - userService.save() 호출 여부 검증
+    @Test
+    void create_user() throws Exception{
+        String name = "김이화";
+        String email = "efub@test.com";
+
+        UserRequestDTO requestDTO = UserRequestDTO.builder()
+                .name(name)
+                .email(email)
+                .build();
+
+        User savedUser = User.builder()
+                .id(1L)
+                .name(name)
+                .email(email)
+                .role(Role.USER)
+                .build();
+
+        given(userService.save(any(UserRequestDTO.class)))
+                .willReturn(savedUser);
+
+        mockMvc.perform(post("/users").contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(requestDTO)))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.name").value(name))
+                .andExpect(jsonPath("$.email").value(email));
+
+        verify(userService).save(any(UserRequestDTO.class));
+    }
+
 }
