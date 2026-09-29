@@ -37,10 +37,11 @@ dependencies {
 	annotationProcessor 'org.projectlombok:lombok'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+	// TODO 1) H2 의존성 추가
+
 	}
 
 tasks.named('test') {
 	useJUnitPlatform()
-	//클래스 데이터 공유 기능 비활성화
 	jvmArgs "-Xshare:off"
 }

@@ -20,19 +20,21 @@ class HttpExampleControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
-
+    // TODO 2. GET /hello 요청에 대한 테스트를 작성해주세요.
     @Test
-    void return_hello() throws Exception{
-    // Given: name과 예상 응답값 준비
+    void return_hello() throws Exception {
+        // Given: name과 예상 응답값 준비
         String name = "EFUB";
         String expectedResponse = "helloEFUB";
 
-
-    // When: GET /hello 요청에 name 쿼리 파라미터 전달
+        // When: GET /hello 요청에 name 쿼리 파라미터 전달
         mockMvc.perform(get("/hello")
-                        .param("name", name))
+                .param("name", name))
                 .andExpect(status().isOk())
                 .andExpect(content().string(expectedResponse));
+
         // Then: 200 OK와 응답 본문을 검증
     }
+
+
 }

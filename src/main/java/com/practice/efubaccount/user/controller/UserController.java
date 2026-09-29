@@ -19,12 +19,12 @@ public class UserController {
 
     private final UserService userService;
 
-    //  POST /users 회원 생성 API
+    // TODO 15. POST /users 회원 생성 API
     @PostMapping
     public ResponseEntity<User> createUser(
-            @Valid @RequestBody UserRequestDTO requestDTO){
+            @Valid @RequestBody UserRequestDTO requestDTO
+    ) {
         User savedUser = userService.save(requestDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(savedUser);
     }
-
 }
