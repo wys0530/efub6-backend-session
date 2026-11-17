@@ -12,8 +12,8 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 import java.util.Optional;
 
-// TODO 5) CustomPostRepository 상속하기
-public interface PostRepository extends JpaRepository<Post, Long> {
+// 5) CustomPostRepository 상속하기
+public interface PostRepository extends JpaRepository<Post, Long>, CustomPostRepository {
 
     @Query(
             value = """
